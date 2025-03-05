@@ -3,13 +3,15 @@ using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine.AI;
 using UnityEngine.Animations;
+using UnityEngine.UIElements;
 
 public class EnemyBehaviour : NetworkBehaviour
 {
-    [SerializeField] private float moveSpeed = 3f;
+    //[SerializeField] private float moveSpeed = 3f;
 
     private NetworkVariable<Vector3> targetPosition = new NetworkVariable<Vector3>();
     UnityEngine.AI.NavMeshAgent enemyAgent;
+    public NetworkVariable<Vector3> currentPosition = new NetworkVariable<Vector3>();
 
     private void Start()
     {
@@ -18,7 +20,7 @@ public class EnemyBehaviour : NetworkBehaviour
     private void Update()
     {
  
-        if (!IsServer) return;
+        
 
         // Find nearest player
         GameObject nearestPlayer = FindNearestPlayer();
@@ -27,12 +29,14 @@ public class EnemyBehaviour : NetworkBehaviour
         {
             // Move towards the player
             enemyAgent.SetDestination(nearestPlayer.transform.position);
+            SubmitPositionRequestServerRpc(transform.position);
             //Vector3 direction = (nearestPlayer.transform.position - transform.position).normalized;
             //targetPosition.Value = transform.position + direction * moveSpeed * Time.deltaTime;
             //transform.position = targetPosition.Value;
         }
     }
-
+    [ServerRpc]
+    void SubmitPositionRequestServerRpc(Vector3 position, ServerRpcParams serverRpcParams = default) => currentPosition.Value = position;
     private void OnTriggerEnter(Collider other)
     {
         //   // Check if enemy touches a player
