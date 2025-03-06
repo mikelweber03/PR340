@@ -22,12 +22,15 @@ public class EnemyBehaviour : NetworkBehaviour
 
         // Find nearest player
         GameObject nearestPlayer = FindNearestPlayer();
-        print("chasing1");
         if (nearestPlayer != null)
         {
             // Move towards the player
             enemyAgent.SetDestination(nearestPlayer.transform.position);
+            if(IsOwner)
+            {
             SubmitPositionRequestServerRpc(transform.position);
+
+            }
             //Vector3 direction = (nearestPlayer.transform.position - transform.position).normalized;
             //targetPosition.Value = transform.position + direction * moveSpeed * Time.deltaTime;
             //transform.position = targetPosition.Value;
@@ -37,23 +40,21 @@ public class EnemyBehaviour : NetworkBehaviour
     void SubmitPositionRequestServerRpc(Vector3 position, ServerRpcParams serverRpcParams = default) => currentPosition.Value = position;
     private void OnTriggerEnter(Collider other)
     {
-        if (IsOwner && !IsServer)
+        if (!IsServer)
         {
-            //   // Check if enemy touches a player
-            //   GameObject player = other.GameObject();
-            //   if (player != null)
-            //   {
-            //       // Eliminate player, gotta set each player active again each round
-            //       player.SetActive(false);
-            //   }
+            // Check if enemy touches a player
+            GameObject player = other.GameObject();
+            if (player != null)
+            {
+                // Eliminate player, gotta set each player active again each round
+                player.SetActive(false);
+            }
             print("Player has been tagged");
         }
     }
 
     private GameObject FindNearestPlayer()
     {
-        
-        print("chasing2");
         GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
         GameObject nearest = null;
         float minDistance = float.MaxValue;
