@@ -13,6 +13,7 @@ public class MovementNetworkController : NetworkBehaviour
 
     void Update()
     {
+        
         if (IsOwner && !IsServer)
         {
             float moveX = Input.GetAxis("Horizontal");
