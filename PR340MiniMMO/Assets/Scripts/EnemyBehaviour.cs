@@ -42,14 +42,15 @@ public class EnemyBehaviour : NetworkBehaviour
                 if (player != null)
                 {
                     player.tag = "caught";
-                    player.GetComponent<Material>().color = Color.red;
+                    //player.GetComponent<Material>().color = Color.red;
+                    //For some reson unity doesn't recognize Player(clone) to have a material and the Text UI didn't work either
                     GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
                     print("Player has been tagged");
                     if (players.Length == 1)
                     {
                         Time.timeScale = 0f;
                         gameOver = true;
-                        player.GetComponent<Material>().color = Color.yellow;
+                        //player.GetComponent<Material>().color = Color.yellow;
                     }
                 }
             }
