@@ -3,14 +3,14 @@ using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine.AI;
 using UnityEngine.Animations;
-using UnityEngine.UIElements;
 
 public class EnemyBehaviour : NetworkBehaviour
 {
     private NetworkVariable<Vector3> targetPosition = new NetworkVariable<Vector3>();
     UnityEngine.AI.NavMeshAgent enemyAgent;
     public NetworkVariable<Vector3> currentPosition = new NetworkVariable<Vector3>();
-
+    public bool gameOver = false;
+    
     private void Start()
     {
         enemyAgent = GetComponent<UnityEngine.AI.NavMeshAgent>();
@@ -34,20 +34,23 @@ public class EnemyBehaviour : NetworkBehaviour
     void SubmitPositionRequestServerRpc(Vector3 position, ServerRpcParams serverRpcParams = default) => currentPosition.Value = position;
     private void OnTriggerEnter(Collider other)
     {
-        if (!IsServer)
+        if (other.gameObject.tag == "Player")
         {
-            GameObject player = other.GameObject();
-            if (player != null)
+            if (!IsServer)
             {
-                // Eliminate player, gotta set each player active again each round
-                player.tag = "caught";
-                GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
-                print("Player has been tagged");
-                if (players.Length == 1)
+                GameObject player = other.GameObject();
+                if (player != null)
                 {
-                    //Time.timeScale = 0f;
-                    print("You win");
-                    //Display winning message
+                    player.tag = "caught";
+                    player.GetComponent<Material>().color = Color.red;
+                    GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+                    print("Player has been tagged");
+                    if (players.Length == 1)
+                    {
+                        Time.timeScale = 0f;
+                        gameOver = true;
+                        player.GetComponent<Material>().color = Color.yellow;
+                    }
                 }
             }
         }
