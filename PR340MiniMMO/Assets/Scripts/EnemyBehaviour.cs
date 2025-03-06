@@ -7,8 +7,6 @@ using UnityEngine.UIElements;
 
 public class EnemyBehaviour : NetworkBehaviour
 {
-    //[SerializeField] private float moveSpeed = 3f;
-
     private NetworkVariable<Vector3> targetPosition = new NetworkVariable<Vector3>();
     UnityEngine.AI.NavMeshAgent enemyAgent;
     public NetworkVariable<Vector3> currentPosition = new NetworkVariable<Vector3>();
@@ -29,11 +27,7 @@ public class EnemyBehaviour : NetworkBehaviour
             if(IsOwner)
             {
             SubmitPositionRequestServerRpc(transform.position);
-
             }
-            //Vector3 direction = (nearestPlayer.transform.position - transform.position).normalized;
-            //targetPosition.Value = transform.position + direction * moveSpeed * Time.deltaTime;
-            //transform.position = targetPosition.Value;
         }
     }
     [ServerRpc]
@@ -42,14 +36,19 @@ public class EnemyBehaviour : NetworkBehaviour
     {
         if (!IsServer)
         {
-            // Check if enemy touches a player
             GameObject player = other.GameObject();
             if (player != null)
             {
                 // Eliminate player, gotta set each player active again each round
-                player.SetActive(false);
+                player.tag = "caught";
+                GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+                print("Player has been tagged");
+                if (players.Length == 1)
+                {
+                    Time.timeScale = 0f;
+                    //Display winning message
+                }
             }
-            print("Player has been tagged");
         }
     }
 
