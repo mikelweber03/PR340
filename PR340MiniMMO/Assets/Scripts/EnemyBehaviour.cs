@@ -45,7 +45,8 @@ public class EnemyBehaviour : NetworkBehaviour
                 print("Player has been tagged");
                 if (players.Length == 1)
                 {
-                    Time.timeScale = 0f;
+                    //Time.timeScale = 0f;
+                    print("You win");
                     //Display winning message
                 }
             }
